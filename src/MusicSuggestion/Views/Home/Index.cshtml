@@ -10,25 +10,23 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div class="text-center">
-    <div>
-        <h2>Tell us what you like. Choose at least one genre, track or artist to continue</h2>
+    <div style="font-weight: bold; padding-bottom: 1.5rem">
+        <h1>Tell us what you like. </h1>
+        <h1>Choose at least one genre, track or artist to continue</h1>
     </div>
 
-
-    <fieldset>
-        <legend>Choose your favourite genres</legend>
-
-        <div id="genresDiv" class="editor-field" style="padding-bottom: 1rem">
-            @Html.ListBox("Genres", ViewBag.GenresList as MultiSelectList)
-        </div>
-    </fieldset>
+    <h3>Your favourite genres</h3>
+    <div id="genresDiv" class="editor-field" style="padding-bottom: 1rem">
+        @Html.ListBox("Genres", ViewBag.GenresList as MultiSelectList)
+    </div>
 
     <script>
         $('#Genres').selectpicker();
     </script>
 
 
-    Artist Name:<input id="txtArtistName" type="text" />
+    <h3>Your favourite artists</h3>
+    <input id="txtArtistName" type="text" />
     <br />
     <br />
     <div id="divArtists" class="row row-cols-1 row-cols-md-6">
@@ -49,7 +47,8 @@
         </div>
     </div>
 
-    Track Name:<input id="txtTrackName" type="text" />
+    <h3>Your favourite songs</h3>
+    <input id="txtTrackName" type="text" />
     <br />
     <br />
     <div id="divTracks" class="row row-cols-1 row-cols-md-6">
@@ -72,7 +71,7 @@
 
     <div>
         <div class="col mb-12">
-            <button onclick="redirectToRecommendation()">Show me my recommendations</button>
+            <button onclick="redirectToRecommendation()" class="button-round">Show me my recommendations</button>
         </div>
     </div>
 
@@ -189,7 +188,14 @@
 
 
         function redirectToRecommendation() {
-            const likedGenres = $("#genresDiv .filter-option-inner-inner").first().text().split(", ");
+            const likedGenres = $("#genresDiv .filter-option-inner-inner").first().text().split(", ").filter(g => g !== "Nothing selected");
+
+            if (likedGenres.length == 0 && likedArtists.length == 0 && likedTracks == 0)
+            {
+                alert("Choose at least one genre, artist or track to continue.");
+                return false;
+            }
+
             let genresParams = "";
             if (likedGenres.length > 0)
             {
@@ -230,6 +236,51 @@
         .like-thumb:hover {
             cursor: pointer;
         }
-    </style>
 
+        input {
+            padding: 1rem 0.75rem;
+            height: calc(3.5rem + 2px);
+            line-height: 1.25;
+            border: 1px solid #ced4da;
+            background-clip: padding-box;
+            color: #212529;
+            font-size: 1rem;
+            font-weight: 400;
+            display: center;
+            width: 50%;
+            appearance: none;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .dropdown {
+            height: calc(3.5rem + 2px);
+        }
+
+        #divArtists {
+            padding-bottom: 1rem;
+        }
+
+        #divTracks {
+            margin-bottom: 1rem;
+        }
+
+        .button-round {
+            padding: 1.25rem 2.25rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 10rem;
+            background-color: #bd7b6f;
+        }
+
+            .button-round:hover {
+                background-color: #1DB954;
+            }
+
+        .card {
+            margin-bottom: 1rem;
+        }
+    </style>
 </div>

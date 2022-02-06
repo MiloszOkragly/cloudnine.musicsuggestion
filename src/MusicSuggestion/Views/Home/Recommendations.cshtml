@@ -3,39 +3,45 @@
 @{
     ViewData["Title"] = "Recommendations";
 }
-
-<h1>Recommendations</h1>
-
-<div>
-    <h4>You dont't like these suggestions?</h4>
-    <div>
-        <button onclick="refreshPage()">Try another set</button>
-        <span>OR</span>
-        <button onclick="redirectToHome()">Change your preferences</button>
+<div class="text-center">
+    <div style="font-weight: bold; padding-bottom: 1.5rem">
+        <h1>Recommendations</h1>
     </div>
-</div>
-<div class="container">
-    @foreach (var item in ViewBag.RecomendedTracks)
-    {
-        <div class="row recommendation-row">
-            <div class="image-parent col-sm">
-                <img src="@item.Album?.Images[0]?.Url" class="img-fluid">
-            </div>
-            <div class="col-sm">
-                <h3>@item.Name</h3>
-            </div>
-            <div class="col-sm">
-                @foreach (var artist in item.Artists)
-                {
-                    <h5>@artist.Name</h5>
-                }
-            </div>
-            <div class="col-sm">
-                <h5>Album: @item.Album?.Name</h5>
-            </div>
+
+    <div>
+        <h4>You dont't like these suggestions?</h4>
+        <div>
+            <button onclick="refreshPage()">Try another set</button>
+            <span class="or">OR</span>
+            <button onclick="redirectToHome()">Change your preferences</button>
         </div>
-    }
-</div>>
+    </div>
+    <div class="container">
+        @foreach (var item in ViewBag.RecomendedTracks)
+        {
+            <div class="row recommendation-row">
+                <div class="image-parent col-sm">
+                    <img src="@item.Album?.Images[0]?.Url" class="img-fluid">
+                </div>
+                <div class="col-sm">
+                    <h3>@item.Name</h3>
+                </div>
+                <div class="col-sm">
+                    @foreach (var artist in item.Artists)
+                    {
+                        <h5>@artist.Name</h5>
+                    }
+                </div>
+                <div class="col-sm">
+                    <h5>Album: @item.Album?.Name</h5>
+                </div>
+            </div>
+        }
+    </div>>
+</div>
+
+
+
 
 <script>
     function refreshPage() {
@@ -47,6 +53,30 @@
 </script>
 
 <style>
+    button {
+        padding: 1.25rem 2.25rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 10rem;
+        background-color: #bd7b6f;
+    }
+
+    button:hover {
+        background-color: #1DB954;
+    }
+
+    h4 {
+        padding-bottom: 2rem;
+    }
+
+    .or {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+
     .image-parent {
         max-width: 120px;
     }
@@ -61,4 +91,5 @@
     .recommendation-row {
         align-items: center;
     }
+
 </style>
