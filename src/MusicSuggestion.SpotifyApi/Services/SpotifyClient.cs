@@ -16,6 +16,11 @@ public class SpotifyClient : ISpotifyClient, IDisposable
     {
         _httpClient = new HttpClient();
         _options = options.Value;
+
+        if (string.IsNullOrWhiteSpace(_options.ClientId) || string.IsNullOrWhiteSpace(_options.ClientSecret))
+        {
+            throw new ArgumentException("Spotify ClientId and ClientSecret must be provided.");
+        }
     }
 
     public void Dispose()
