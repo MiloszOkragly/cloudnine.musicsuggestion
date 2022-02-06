@@ -1,0 +1,64 @@
+﻿@model IEnumerable<MusicSuggestion.Abstractions.Models.Recommendations>
+
+@{
+    ViewData["Title"] = "Recommendations";
+}
+
+<h1>Recommendations</h1>
+
+<div>
+    <h4>You dont't like these suggestions?</h4>
+    <div>
+        <button onclick="refreshPage()">Try another set</button>
+        <span>OR</span>
+        <button onclick="redirectToHome()">Change your preferences</button>
+    </div>
+</div>
+<div class="container">
+    @foreach (var item in ViewBag.RecomendedTracks)
+    {
+        <div class="row recommendation-row">
+            <div class="image-parent col-sm">
+                <img src="@item.Album?.Images[0]?.Url" class="img-fluid">
+            </div>
+            <div class="col-sm">
+                <h3>@item.Name</h3>
+            </div>
+            <div class="col-sm">
+                @foreach (var artist in item.Artists)
+                {
+                    <h5>@artist.Name</h5>
+                }
+            </div>
+            <div class="col-sm">
+                <h5>Album: @item.Album?.Name</h5>
+            </div>
+        </div>
+    }
+</div>>
+
+<script>
+    function refreshPage() {
+        window.location.reload();
+    }
+    function redirectToHome() {
+        window.location.href = "/home";
+    }
+</script>
+
+<style>
+    .image-parent {
+        max-width: 120px;
+    }
+
+    .recommendation-row {
+        border: 1px solid;
+        border-radius: 15px;
+        padding: 15px;
+        margin: 20px;
+    }
+
+    .recommendation-row {
+        align-items: center;
+    }
+</style>

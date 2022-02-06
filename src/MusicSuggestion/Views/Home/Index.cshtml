@@ -1,0 +1,235 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="text-center">
+    <div>
+        <h2>Tell us what you like. Choose at least one genre, track or artist to continue</h2>
+    </div>
+
+
+    <fieldset>
+        <legend>Choose your favourite genres</legend>
+
+        <div id="genresDiv" class="editor-field" style="padding-bottom: 1rem">
+            @Html.ListBox("Genres", ViewBag.GenresList as MultiSelectList)
+        </div>
+    </fieldset>
+
+    <script>
+        $('#Genres').selectpicker();
+    </script>
+
+
+    Artist Name:<input id="txtArtistName" type="text" />
+    <br />
+    <br />
+    <div id="divArtists" class="row row-cols-1 row-cols-md-6">
+    </div>
+
+    <div style="display: none;" id="artistTemplate">
+        <div class="col mb-12">
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <div class="card-like-section">
+                        <i onclick="toggleLikeForArtist(this)" class="fa fa-thumbs-up fa-3x like-thumb" style="color: grey"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    Track Name:<input id="txtTrackName" type="text" />
+    <br />
+    <br />
+    <div id="divTracks" class="row row-cols-1 row-cols-md-6">
+    </div>
+
+    <div style="display: none;" id="trackTemplate">
+        <div class="col mb-12">
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <div class="card-like-section">
+                        <i onclick="toggleLikeForTrack(this)" class="fa fa-thumbs-up fa-3x like-thumb" style="color: grey"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="col mb-12">
+            <button onclick="redirectToRecommendation()">Show me my recommendations</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        let artistNameCache = "";
+        let likedArtists = [];
+        let trackNameCache = "";
+        let likedTracks = [];
+
+        $(function () {
+            GetArtists();
+            GetTracks();
+            $("#txtArtistName").keyup(function () {
+                GetArtists();
+            });
+            $("#txtTrackName").keyup(function () {
+                GetTracks();
+            });
+        });
+
+        function GetArtists() {
+            let artistName = $.trim($("#txtArtistName").val());
+            if (artistName == artistNameCache)
+            {
+                return;
+            }
+
+            artistNameCache = artistName;
+            let searchQuery = { "Query": artistName };
+
+            $.post("/Home/SearchArtists", searchQuery, function(artists) {
+                let divArtists = $("#divArtists");
+                $(divArtists).empty();
+                $.each(artists.items, function (i, artist) {
+
+                    if (i > 5) return false;
+
+                    $(divArtists).append($("#artistTemplate").html());
+                    let artistCard = $(divArtists).find(".card").last();
+
+                    $(artistCard).find(".card-img-top").first().attr("src", artist.images[0]?.url);
+                    $(artistCard).find(".card-title").first().html(artist.name);
+                    $(artistCard).find(".card-text").first().html('Followers: ' + artist.followers.total);
+                    $(artistCard).find(".card-like-section i").first().attr("data-artist-id", artist.id);
+
+                    if (likedArtists.includes(artist.id))
+                    {
+                        $(artistCard).find(".card-like-section i").first().toggleClass("green-thumb");
+                    }
+                });
+            });
+        }
+
+        function GetTracks() {
+            let trackName = $.trim($("#txtTrackName").val());
+            if (trackName == trackNameCache)
+            {
+                return;
+            }
+
+            trackNameCache = trackName;
+            let searchQuery = { "Query": trackName };
+
+            $.post("/Home/SearchTracks", searchQuery, function(tracks) {
+                let divTracks = $("#divTracks");
+                $(divTracks).empty();
+                $.each(tracks.items, function (i, track) {
+
+                    if (i > 5) return false;
+
+                    $(divTracks).append($("#trackTemplate").html());
+                    let trackCard = $(divTracks).find(".card").last();
+
+                    $(trackCard).find(".card-img-top").first().attr("src", track.album?.images[0]?.url);
+                    $(trackCard).find(".card-title").first().html(track.name);
+                    $(trackCard).find(".card-text").first().html('Album name: ' + track.album?.name);
+                    $(trackCard).find(".card-like-section i").first().attr("data-track-id", track.id);
+
+                    if (likedTracks.includes(track.id))
+                    {
+                        $(trackCard).find(".card-like-section i").first().toggleClass("green-thumb");
+                    }
+                });
+            });
+        }
+
+        function toggleLikeForArtist(elem) {
+            let artistId = $(elem).attr("data-artist-id");
+            $(elem).toggleClass("green-thumb");
+
+            if (elem.classList.contains("green-thumb"))
+            {
+                likedArtists.push(artistId);
+            }
+            else
+            {
+                likedArtists = likedArtists.filter(ar => ar !== artistId)
+            }
+        }
+
+        function toggleLikeForTrack(elem) {
+            let trackId = $(elem).attr("data-track-id");
+            $(elem).toggleClass("green-thumb");
+
+            if (elem.classList.contains("green-thumb"))
+            {
+                likedTracks.push(trackId);
+            }
+            else
+            {
+                likedTracks = likedTracks.filter(tr => tr !== trackId)
+            }
+        }
+
+
+        function redirectToRecommendation() {
+            const likedGenres = $("#genresDiv .filter-option-inner-inner").first().text().split(", ");
+            let genresParams = "";
+            if (likedGenres.length > 0)
+            {
+                $.each(likedGenres, function (i, genre) {
+                    genresParams += "genres=" + genre + "&";
+                });
+            }
+
+            let artistsParams = "";
+            if (likedArtists.length > 0)
+            {
+                $.each(likedArtists, function (i, artist) {
+                    artistsParams += "artists=" + artist + "&";
+                });
+            }
+
+            let tracksParams = "";
+            if (likedTracks.length > 0)
+            {
+                $.each(likedTracks, function (i, track) {
+                    tracksParams += "tracks=" + track + "&";
+                });
+            }
+
+            const url = "/home/recommendations?" + genresParams + artistsParams + tracksParams;
+
+            window.location.href = url;
+        }
+
+    </script>
+
+
+    <style>
+        .green-thumb {
+            color: green !important;
+        }
+
+        .like-thumb:hover {
+            cursor: pointer;
+        }
+    </style>
+
+</div>
