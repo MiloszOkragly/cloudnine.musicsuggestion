@@ -10,7 +10,6 @@ builder.Services.AddSingleton<ISpotifyClient, SpotifyClient>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<ISpotifyCacheService, SpotifyCacheService>();
 builder.Services.AddTransient<ISpotifyService, SpotifyService>();
-builder.Services.AddTransient<ICustomJsonConverter, CustomJsonConverter>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
