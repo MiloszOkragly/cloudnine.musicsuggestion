@@ -58,10 +58,15 @@ namespace MusicSuggestion.Controllers
             seed.AddRange(artists.Select(a => new Seed { Type = Seed.ARTIST_KEY, Value = a }));
             seed.AddRange(tracks.Select(t => new Seed { Type = Seed.TRACK_KEY, Value = t }));
 
-            var recommendations = await _spotifyService.GetRecommendationsAsync(seed, CancellationToken.None);
-            ViewBag.RecomendedTracks = recommendations.Tracks;
+            if (seed.Count > 0)
+            {
+                var recommendations = await _spotifyService.GetRecommendationsAsync(seed, CancellationToken.None);
+                ViewBag.RecomendedTracks = recommendations.Tracks;
 
-            return View();
+                return View();
+            }
+
+            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
